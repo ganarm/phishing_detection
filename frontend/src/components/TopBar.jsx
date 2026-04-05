@@ -13,7 +13,7 @@ function TopBar({ theme, setTheme, sidebarCollapsed, setSidebarCollapsed }) {
           {/* <span>{theme === 'dark' ? 'Light theme' : 'Dark theme'}</span> */}
         </button>
         <span className="chip">Environment: Local</span>
-        <span className="chip">API: /api</span>
+        {/* <span className="chip">API: /api</span> */}
       </div>
     </header>
   )

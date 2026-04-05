@@ -15,9 +15,10 @@ import PredictPanel from './components/PredictPanel'
 import BulkPanel from './components/BulkPanel'
 import ComparePanel from './components/ComparePanel'
 import TrainPanel from './components/TrainPanel'
+import RecentScansPanel from './components/RecentScansPanel'
 
 const MODELS = ['RandomForest', 'DecisionTree', 'XGBoost', 'LogisticRegression']
-const SECTIONS = ['predict', 'bulk', 'compare', 'train']
+const SECTIONS = ['predict', 'bulk', 'compare', 'train', 'history']
 const THEME_KEY = 'phishshield-theme'
 const SIDEBAR_KEY = 'phishshield-sidebar-collapsed'
 
@@ -193,6 +194,7 @@ function App() {
     { id: 'bulk', label: 'Bulk Analysis', description: 'Batch URL screening' },
     { id: 'compare', label: 'Model Lab', description: 'Metrics and model ranking' },
     { id: 'train', label: 'Training Ops', description: 'Run and monitor retraining' },
+    { id: 'history', label: 'Recent Scans', description: 'Latest scan history' },
   ]
 
   return (
@@ -261,6 +263,8 @@ function App() {
           isLoadingTrainAction={isLoadingTrainAction}
           refreshTrainingStatus={refreshTrainingStatus}
         />
+
+        <RecentScansPanel isActive={activeSection === 'history'} />
       </main>
     </div>
   )

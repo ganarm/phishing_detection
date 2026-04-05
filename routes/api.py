@@ -10,6 +10,7 @@ bp = Blueprint('api', __name__, url_prefix='/api')
 
 MODEL_NAMES = ['RandomForest', 'DecisionTree', 'XGBoost', 'LogisticRegression']
 LOG_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'training.log')
+HISTORY_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'scan_history.json')
 TRAINING_STATE = {
     'running': False,
     'model_name': None,
@@ -35,6 +36,43 @@ def _run_training(model_name, log_path):
             log_file.write("\n### TRAINING COMPLETED ###\n")
             log_file.flush()
             TRAINING_STATE['running'] = False
+
+
+def _read_history():
+    try:
+        if not os.path.exists(HISTORY_PATH):
+            return []
+        import json
+        with open(HISTORY_PATH, 'r') as f:
+            return json.load(f)
+    except Exception:
+        return []
+
+
+def _append_history(entry):
+    try:
+        history = _read_history()
+        history.append(entry)
+        import json
+        with open(HISTORY_PATH, 'w') as f:
+            json.dump(history[-500:], f, indent=2)
+    except Exception:
+        pass
+
+
+@bp.get('/history')
+def history():
+    try:
+        limit = int(request.args.get('limit', 50))
+    except Exception:
+        limit = 50
+
+    entries = _read_history() or []
+    # return most recent first
+    sliced = entries[-limit:]
+    sliced.reverse()
+
+    return jsonify({'count': len(sliced), 'results': sliced})
 
 
 @bp.get('/health')
@@ -86,7 +124,7 @@ def predict():
             })
 
         result = predict_url(url, model_name)
-        return jsonify({
+        resp = {
             'url': url,
             'test_mode': test_mode,
             'prediction': result['prediction'],
@@ -94,7 +132,20 @@ def predict():
             'shap_explanations': result.get('shap_explanations'),
             'model_name': model_name,
             'all_models_results': None,
-        })
+        }
+        # append to scan history
+        try:
+            _append_history({
+                'ts': pd.Timestamp.now().isoformat(),
+                'url': url,
+                'model': model_name,
+                'prediction': resp['prediction'],
+                'confidence': resp.get('confidence'),
+            })
+        except Exception:
+            pass
+
+        return jsonify(resp)
     except Exception as exc:
         return jsonify({'error': f'Error making prediction: {exc}'}), 500
 
@@ -114,6 +165,19 @@ def bulk():
             return jsonify({'error': 'no valid urls provided'}), 400
 
         results_df = bulk_predict(cleaned_urls, model_name)
+        # append bulk rows to history
+        try:
+            for _, row in results_df.iterrows():
+                _append_history({
+                    'ts': pd.Timestamp.now().isoformat(),
+                    'url': row.get('url'),
+                    'model': model_name,
+                    'prediction': row.get('prediction'),
+                    'confidence': row.get('confidence'),
+                })
+        except Exception:
+            pass
+
         return jsonify({
             'count': len(results_df),
             'results': results_df.to_dict(orient='records'),
@@ -136,6 +200,18 @@ def bulk_from_file():
             return jsonify({'error': 'CSV must contain a "url" column'}), 400
 
         results_df = bulk_predict(df['url'].tolist(), model_name)
+        try:
+            for _, row in results_df.iterrows():
+                _append_history({
+                    'ts': pd.Timestamp.now().isoformat(),
+                    'url': row.get('url'),
+                    'model': model_name,
+                    'prediction': row.get('prediction'),
+                    'confidence': row.get('confidence'),
+                })
+        except Exception:
+            pass
+
         return jsonify({
             'count': len(results_df),
             'results': results_df.to_dict(orient='records'),

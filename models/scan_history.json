@@ -1,0 +1,51 @@
+[
+  {
+    "ts": "2026-04-05T22:24:50.414871",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 0.5585000000000001
+  },
+  {
+    "ts": "2026-04-05T22:25:11.080096",
+    "url": "https://www.google.com",
+    "model": "DecisionTree",
+    "prediction": "Phishing",
+    "confidence": 1.0
+  },
+  {
+    "ts": "2026-04-05T22:25:25.888844",
+    "url": "API: /api",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": null
+  },
+  {
+    "ts": "2026-04-05T22:25:51.812791",
+    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": null
+  },
+  {
+    "ts": "2026-04-05T22:25:51.813292",
+    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": null
+  },
+  {
+    "ts": "2026-04-05T22:25:51.813850",
+    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": null
+  },
+  {
+    "ts": "2026-04-05T22:25:51.814559",
+    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": null
+  }
+]

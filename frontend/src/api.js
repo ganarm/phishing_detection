@@ -68,3 +68,8 @@ export function startTraining(model_name) {
 export function trainingStatus() {
   return requestJson('/api/train/status')
 }
+
+export function getScanHistory(limit = 50) {
+  const q = new URLSearchParams({ limit: String(limit) })
+  return requestJson(`/api/history?${q.toString()}`)
+}
