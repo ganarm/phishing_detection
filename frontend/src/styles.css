@@ -454,8 +454,7 @@ body {
 
 .learn-card {
   background: var(--card);
-  border: 1px solid var(--line);
-  border-radius: var(--radius-md);
+  border-left: 1px solid var(--line);
   padding: 16px;
   min-height: 120px;
     margin: 25px 0px;
@@ -594,7 +593,7 @@ button {
 
 button:hover {
   /* transform: translateY(-1px); */
-  box-shadow: 0 10px 16px rgba(37, 99, 235, 0.25);
+  /* box-shadow: 0 10px 16px rgba(37, 99, 235, 0.25); */
 }
 
 button.secondary {

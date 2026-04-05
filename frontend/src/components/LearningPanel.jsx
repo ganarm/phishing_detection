@@ -3,10 +3,10 @@ import React from 'react'
 function LearningPanel({ isActive }) {
   return (
     <section className={isActive ? 'workspace-pane active' : 'workspace-pane'}>
-      <div className="learn-hero">
+      {/* <div className="learn-hero">
         <h2>Understand how threat detection works</h2>
         <p className="muted">This page explains the models powering the scanner, the explanation signals (SHAP), and the key URL/domain features used to detect phishing. Use this to interpret results and improve your threat-hunting workflows.</p>
-      </div>
+      </div> */}
 
       <div className="learn-grid">
         <article className="learn-card">

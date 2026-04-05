@@ -54,5 +54,12 @@
     "model": "RandomForest",
     "prediction": "Phishing",
     "confidence": 0.9241666666666666
+  },
+  {
+    "ts": "2026-04-05T23:00:27.793244",
+    "url": "margin: 25px 0px;",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 0.9341666666666666
   }
 ]
