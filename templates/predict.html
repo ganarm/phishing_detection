@@ -1,0 +1,621 @@
+{% extends "base.html" %}
+{% block title %}URL Phishing Detection - Test Single URL{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <!-- Header Section -->
+            <div class="text-center mb-5">
+                <h1 class="display-5 fw-bold text-primary mb-3">
+                    <i class="fas fa-search me-3"></i>URL Phishing Detection
+                </h1>
+                <p class="lead text-secondary">
+                    Analyze individual URLs for phishing indicators using advanced machine learning models
+                </p>
+            </div>
+
+            <!-- Main Analysis Card -->
+            <div class="card shadow-sm mb-5">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-microscope me-2"></i>URL Analysis Tool
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="analysisForm">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="mb-4">
+                                    <label for="url" class="form-label fw-bold">
+                                        <i class="fas fa-link me-2"></i>URL to Analyze
+                                    </label>
+                                    <input type="url" class="form-control form-control-lg" id="url" name="url"
+                                           placeholder="https://example.com/path?query=value"
+                                           required autocomplete="off">
+                                    <div class="form-text">
+                                        Enter the complete URL including protocol (http:// or https://)
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-4">
+                                    <label for="test-mode" class="form-label fw-bold">
+                                        <i class="fas fa-sliders-h me-2"></i>Test Mode
+                                    </label>
+                                    <select name="test_mode" id="test-mode" class="form-select form-select-lg">
+                                        <option value="single" selected>🔍 Single Model</option>
+                                        <option value="all">📊 All Models (Comparison)</option>
+                                    </select>
+                                    <div class="form-text">
+                                        Compare all models or test one model
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-4">
+                                    <label for="model" class="form-label fw-bold">
+                                        <i class="fas fa-brain me-2"></i>ML Model (for Single Model mode)
+                                    </label>
+                                    <select name="model" id="model" class="form-select form-select-lg">
+                                        <option value="RandomForest" selected>🌲 Random Forest (95.9%)</option>
+                                        <option value="XGBoost">🚀 XGBoost (95.9%)</option>
+                                        <option value="DecisionTree">🌳 Decision Tree (85.9%)</option>
+                                        <option value="LogisticRegression">📊 Logistic Regression (84.0%)</option>
+                                    </select>
+                                    <div class="form-text">
+                                        Select the machine learning algorithm (ignored in All Models mode)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="mb-4">
+                                    <button type="submit" class="btn btn-primary btn-lg px-5" id="analyzeBtn">
+                                        <i class="fas fa-search me-2"></i>Analyze URL
+                                    </button>
+                                    <button type="reset" class="btn btn-secondary btn-lg px-5 ms-2">
+                                        <i class="fas fa-redo me-2"></i>Clear
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    <!-- Quick Test Examples -->
+                    <hr class="my-4">
+                    <div class="mt-4">
+                        <p class="fw-bold mb-3">
+                            <i class="fas fa-flask-vial me-2"></i>Quick Test Examples:
+                        </p>
+                        <div class="row g-2">
+                            <div class="col-md-6">
+                                <p class="small font-weight-bold text-danger mb-2">🚨 Known Phishing URLs (Test Detection):</p>
+                                <div class="btn-group d-flex flex-wrap gap-2" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-danger quick-url" 
+                                            data-url="https://login-paypal.com/verify">PayPal Phishing</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger quick-url" 
+                                            data-url="https://confirm-apple-id.com/signin">Apple ID Phishing</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger quick-url" 
+                                            data-url="http://www.mybank.ru/verify-account">Bank Phishing</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger quick-url" 
+                                            data-url="https://amazon-account-update.tk/login">Amazon Phishing</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger quick-url" 
+                                            data-url="https://test-paypl.com/confirm">Typosquatting</button>
+                                    <button type="button" class="btn btn-sm btn-outline-danger quick-url" 
+                                            data-url="http://193.168.1.1/confirm">IP-Based Phishing</button>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <p class="small font-weight-bold text-success mb-2">✅ Legitimate URLs (Test Accuracy):</p>
+                                <div class="btn-group d-flex flex-wrap gap-2" role="group">
+                                    <button type="button" class="btn btn-sm btn-outline-success quick-url" 
+                                            data-url="https://www.google.com">Google</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success quick-url" 
+                                            data-url="https://github.com/microsoft/vscode">GitHub</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success quick-url" 
+                                            data-url="https://www.paypal.com/myaccount">PayPal Official</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success quick-url" 
+                                            data-url="https://www.amazon.com/gp/your-account">Amazon Official</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success quick-url" 
+                                            data-url="https://support.apple.com/en-us">Apple Support</button>
+                                    <button type="button" class="btn btn-sm btn-outline-success quick-url" 
+                                            data-url="https://www.microsoft.com/en-us">Microsoft</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {% if prediction %}
+            <!-- Results Section -->
+            <div class="card shadow-sm mb-5">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Analysis Results
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="text-center mb-4">
+                                {% if prediction == 'Phishing' %}
+                                    <div class="alert alert-danger border-danger">
+                                        <i class="fas fa-exclamation-triangle fa-3x text-danger mb-3"></i>
+                                        <h4 class="alert-heading">⚠️ Phishing Detected</h4>
+                                        <p class="mb-0">This URL has been identified as potentially malicious</p>
+                                    </div>
+                                {% else %}
+                                    <div class="alert alert-success border-success">
+                                        <i class="fas fa-shield-alt fa-3x text-success mb-3"></i>
+                                        <h4 class="alert-heading">✅ Safe URL</h4>
+                                        <p class="mb-0">This URL appears to be legitimate</p>
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-4">
+                                <h5 class="fw-bold mb-3">Confidence Score</h5>
+                                {% if confidence %}
+                                    <div class="mb-2">
+                                        <div class="progress" style="height: 25px;">
+                                            <div class="progress-bar {{ 'bg-danger' if prediction == 'Phishing' else 'bg-success' }}"
+                                                 role="progressbar"
+                                                 style="width: {{ "%.0f"|format(confidence * 100) }}%"
+                                                 aria-valuenow="{{ "%.0f"|format(confidence * 100) }}"
+                                                 aria-valuemin="0"
+                                                 aria-valuemax="100">
+                                                {{ "%.1f"|format(confidence * 100) }}%
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <p class="text-muted small">
+                                        Model confidence in the prediction result
+                                    </p>
+                                {% endif %}
+                            </div>
+
+                            <div class="row text-center">
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <h6 class="text-primary mb-1">{{ model_name or 'Random Forest' }}</h6>
+                                        <small class="text-muted">Model Used</small>
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="p-3 bg-light rounded">
+                                        <h6 class="text-success mb-1">< 1s</h6>
+                                        <small class="text-muted">Analysis Time</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SHAP Explanation Section -->
+            {% if shap_explanations and not shap_explanations.get('error') %}
+            <div class="card shadow-sm mb-5">
+                <div class="card-header bg-info text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-search-plus me-2"></i>SHAP Explanation Analysis
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>SHAP Analysis:</strong> This shows which features most influenced the model's decision,
+                        helping cybersecurity analysts understand and justify the prediction.
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Decision Breakdown</h5>
+                            <div class="mb-3">
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Base Value (Model Average):</span>
+                                    <strong>{{ "%.4f"|format(shap_explanations.base_value) }}</strong>
+                                </div>
+                                <div class="d-flex justify-content-between mb-2">
+                                    <span>Final Prediction:</span>
+                                    <strong class="{{ 'text-danger' if prediction == 'Phishing' else 'text-success' }}">
+                                        {{ "%.4f"|format(shap_explanations.prediction_value) }}
+                                    </strong>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>Prediction Class:</span>
+                                    <strong class="{{ 'text-danger' if prediction == 'Phishing' else 'text-success' }}">
+                                        {{ prediction }}
+                                    </strong>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Key Insights</h5>
+                            <ul class="list-unstyled">
+                                {% set top_positive = shap_explanations.top_features | selectattr('importance', 'greaterthan', 0) | list %}
+                                {% set top_negative = shap_explanations.top_features | selectattr('importance', 'lessthan', 0) | list %}
+                                {% if top_positive %}
+                                <li class="mb-2">
+                                    <i class="fas fa-arrow-up text-success me-2"></i>
+                                    <strong>Strongest phishing indicators:</strong>
+                                    {{ top_positive[0].feature | replace('_', ' ') | title }}
+                                    ({{ "%.4f"|format(top_positive[0].importance) }})
+                                </li>
+                                {% endif %}
+                                {% if top_negative %}
+                                <li class="mb-2">
+                                    <i class="fas fa-arrow-down text-info me-2"></i>
+                                    <strong>Strongest legitimate indicators:</strong>
+                                    {{ top_negative[0].feature | replace('_', ' ') | title }}
+                                    ({{ "%.4f"|format(top_negative[0].importance) }})
+                                </li>
+                                {% endif %}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <h5>Top 10 Feature Contributions</h5>
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Feature</th>
+                                        <th>Contribution</th>
+                                        <th>Direction</th>
+                                        <th>Impact</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for feature in shap_explanations.top_features[:10] %}
+                                    <tr>
+                                        <td>
+                                            <code>{{ feature.feature | replace('_', ' ') | title }}</code>
+                                        </td>
+                                        <td class="{{ 'text-success' if feature.importance > 0 else 'text-danger' }}">
+                                            {{ "%.4f"|format(feature.importance) }}
+                                        </td>
+                                        <td>
+                                            {% if feature.importance > 0 %}
+                                                <span class="badge bg-danger">→ Phishing</span>
+                                            {% else %}
+                                                <span class="badge bg-success">→ Legitimate</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 6px;">
+                                                <div class="progress-bar {{ 'bg-danger' if feature.importance > 0 else 'bg-success' }}"
+                                                     style="width: {% if shap_explanations.top_features[0].abs_importance > 0 %}{{ "%.0f"|format(feature.abs_importance / shap_explanations.top_features[0].abs_importance * 100) }}{% else %}0{% endif %}%">
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="mt-4">
+                        <div class="alert alert-light">
+                            <h6><i class="fas fa-lightbulb me-2"></i>Analysis Interpretation</h6>
+                            <ul class="mb-0 small">
+                                <li><strong>Positive values</strong> push the prediction toward "Phishing"</li>
+                                <li><strong>Negative values</strong> push the prediction toward "Legitimate"</li>
+                                <li><strong>Larger absolute values</strong> indicate stronger influence on the decision</li>
+                                <li>This analysis helps justify the model's decision and identify potential false positives</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% if shap_explanations and shap_explanations.get('error') %}
+            <div class="card shadow-sm mb-5">
+                <div class="card-header bg-warning text-dark">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>SHAP Analysis Unavailable
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted mb-0">{{ shap_explanations.error }}</p>
+                    <small class="text-muted">SHAP explanations may not be available for all model types or configurations.</small>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- All Models Comparison Section -->
+            {% if all_models_results %}
+            <div class="card shadow-sm mb-5">
+                <div class="card-header bg-success text-white">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-chart-bar me-2"></i>All Models Comparison Results
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <strong>Model Comparison:</strong> Testing the same URL across all 4 machine learning models to identify consensus and model-specific predictions.
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Model</th>
+                                    <th>Prediction</th>
+                                    <th>Confidence</th>
+                                    <th>Accuracy</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% set consensus_phishing = 0 %}
+                                {% set consensus_legitimate = 0 %}
+                                {% for model_name, result in all_models_results.items() %}
+                                    {% if 'error' not in result %}
+                                        {% if result.prediction == 'Phishing' %}
+                                            {% set consensus_phishing = consensus_phishing + 1 %}
+                                        {% else %}
+                                            {% set consensus_legitimate = consensus_legitimate + 1 %}
+                                        {% endif %}
+                                        <tr>
+                                            <td><strong>{{ model_name }}</strong></td>
+                                            <td>
+                                                <span class="badge {{ 'bg-danger' if result.prediction == 'Phishing' else 'bg-success' }}">
+                                                    {{ result.prediction }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                <div class="d-flex align-items-center">
+                                                    <div class="progress flex-grow-1 me-2" style="height: 20px;">
+                                                        <div class="progress-bar {{ 'bg-danger' if result.prediction == 'Phishing' else 'bg-success' }}"
+                                                             style="width: {{ "%.0f"|format(result.confidence * 100) }}%">
+                                                        </div>
+                                                    </div>
+                                                    <span class="badge bg-secondary">{{ "%.1f"|format(result.confidence * 100) }}%</span>
+                                                </div>
+                                            </td>
+                                            <td>
+                                                {% if model_name == 'RandomForest' or model_name == 'XGBoost' %}
+                                                    <span class="badge bg-success">95.9%</span>
+                                                {% elif model_name == 'DecisionTree' %}
+                                                    <span class="badge bg-info">85.9%</span>
+                                                {% elif model_name == 'LogisticRegression' %}
+                                                    <span class="badge bg-warning">84.0%</span>
+                                                {% endif %}
+                                            </td>
+                                            <td><i class="fas fa-check-circle text-success"></i> Completed</td>
+                                        </tr>
+                                    {% else %}
+                                        <tr class="table-danger">
+                                            <td><strong>{{ model_name }}</strong></td>
+                                            <td colspan="4">
+                                                <i class="fas fa-times-circle text-danger me-2"></i>
+                                                Error: {{ result.error }}
+                                            </td>
+                                        </tr>
+                                    {% endif %}
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Consensus Analysis -->
+                    <div class="mt-4 pt-3 border-top">
+                        <h5 class="mb-3">
+                            <i class="fas fa-handshake me-2"></i>Model Consensus Analysis
+                        </h5>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-danger">
+                                            <i class="fas fa-shield-alt me-2"></i>Phishing Detection
+                                        </h6>
+                                        <p class="card-text">
+                                            <strong>{{ consensus_phishing }}</strong> out of 4 models detected this as phishing
+                                        </p>
+                                        {% if consensus_phishing >= 3 %}
+                                            <span class="badge bg-danger">⚠️ HIGH RISK - Strong Consensus</span>
+                                        {% elif consensus_phishing >= 2 %}
+                                            <span class="badge bg-warning">⚡ MEDIUM RISK - Mixed Detection</span>
+                                        {% else %}
+                                            <span class="badge bg-success">✅ LOW RISK - Likely Legitimate</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="card bg-light">
+                                    <div class="card-body">
+                                        <h6 class="card-title text-success">
+                                            <i class="fas fa-check-circle me-2"></i>Legitimate Detection
+                                        </h6>
+                                        <p class="card-text">
+                                            <strong>{{ consensus_legitimate }}</strong> out of 4 models marked this as legitimate
+                                        </p>
+                                        {% if consensus_legitimate >= 3 %}
+                                            <span class="badge bg-success">✅ HIGH CONFIDENCE - Strong Consensus</span>
+                                        {% elif consensus_legitimate >= 2 %}
+                                            <span class="badge bg-warning">⚡ MEDIUM CONFIDENCE - Mixed Detection</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">🚨 LOW CONFIDENCE - Likely Phishing</span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-4 alert alert-light">
+                        <h6><i class="fas fa-lightbulb me-2"></i>Interpretation Guide</h6>
+                        <ul class="mb-0 small">
+                            <li><strong>Strong Consensus (3-4 models agree):</strong> High confidence in the prediction. Trust the result.</li>
+                            <li><strong>Mixed Detection (2-2 split):</strong> Models disagree. Manual review recommended. Check SHAP explanations for each model.</li>
+                            <li><strong>High Accuracy Models (Random Forest, XGBoost):</strong> 95.9% accuracy. Weight their predictions more heavily.</li>
+                            <li><strong>Lower Accuracy Models:</strong> Useful for validation but less reliable individually.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Model Information Section -->
+            <div class="card shadow-sm mb-5">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-info-circle me-2"></i>Model Information
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h5>Selected Model: {{ model_name or 'Random Forest' }}</h5>
+                            {% if model_name == 'RandomForest' or not model_name %}
+                                <p><strong>Random Forest</strong> is an ensemble learning method that constructs multiple decision trees and merges their results. It provides high accuracy and handles overfitting well.</p>
+                                <ul class="small">
+                                    <li>Accuracy: 95.9%</li>
+                                    <li>Algorithm: Ensemble (Bagging)</li>
+                                    <li>Best for: General-purpose classification</li>
+                                </ul>
+                            {% elif model_name == 'XGBoost' %}
+                                <p><strong>XGBoost</strong> is a gradient boosting framework that provides parallel tree boosting. It's known for its speed and performance.</p>
+                                <ul class="small">
+                                    <li>Accuracy: 95.9%</li>
+                                    <li>Algorithm: Gradient Boosting</li>
+                                    <li>Best for: High-performance applications</li>
+                                </ul>
+                            {% elif model_name == 'DecisionTree' %}
+                                <p><strong>Decision Tree</strong> creates a model that predicts the value of a target variable by learning simple decision rules from data features.</p>
+                                <ul class="small">
+                                    <li>Accuracy: 85.9%</li>
+                                    <li>Algorithm: Tree-based</li>
+                                    <li>Best for: Interpretability</li>
+                                </ul>
+                            {% elif model_name == 'LogisticRegression' %}
+                                <p><strong>Logistic Regression</strong> is a statistical model that uses a logistic function to model a binary dependent variable.</p>
+                                <ul class="small">
+                                    <li>Accuracy: 84.0%</li>
+                                    <li>Algorithm: Linear</li>
+                                    <li>Best for: Simple, interpretable models</li>
+                                </ul>
+                            {% endif %}
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Features Analyzed</h5>
+                            <p class="small text-muted mb-3">Our models analyze 50+ features from URLs:</p>
+                            <div class="row">
+                                <div class="col-6">
+                                    <ul class="list-unstyled small">
+                                        <li><i class="fas fa-check text-success me-1"></i>URL Length</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>Domain Analysis</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>Special Characters</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>HTTPS Status</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>IP Address Detection</li>
+                                    </ul>
+                                </div>
+                                <div class="col-6">
+                                    <ul class="list-unstyled small">
+                                        <li><i class="fas fa-check text-success me-1"></i>Subdomain Count</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>Path Analysis</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>Query Parameters</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>Character Ratios</li>
+                                        <li><i class="fas fa-check text-success me-1"></i>Entropy Analysis</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}            {% endif %}
+            <!-- Tips Section -->
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        <i class="fas fa-lightbulb me-2"></i>Analysis Tips
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6>Common Phishing Indicators:</h6>
+                            <ul class="small">
+                                <li>Suspicious domain names</li>
+                                <li>URLs with unusual characters</li>
+                                <li>HTTP instead of HTTPS</li>
+                                <li>IP addresses instead of domain names</li>
+                            </ul>
+                        </div>
+                        <div class="col-md-6">
+                            <h6>Best Practices:</h6>
+                            <ul class="small">
+                                <li>Always verify URLs before clicking</li>
+                                <li>Check for HTTPS security</li>
+                                <li>Be cautious with shortened URLs</li>
+                                <li>Use multiple models for verification</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add loading state to form submission
+document.getElementById('analysisForm').addEventListener('submit', function(e) {
+    const btn = document.getElementById('analyzeBtn');
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Analyzing...';
+    btn.disabled = true;
+});
+
+// Quick URL button functionality
+document.querySelectorAll('.quick-url').forEach(button => {
+    button.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('data-url');
+        document.getElementById('url').value = url;
+        
+        // Auto-select "All Models" test mode for quick tests
+        document.getElementById('test-mode').value = 'all';
+        
+        // Scroll to top and focus
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        document.getElementById('url').focus();
+        
+        // Highlight the input field briefly
+        document.getElementById('url').style.borderColor = '#0d6efd';
+        document.getElementById('url').style.borderWidth = '2px';
+        setTimeout(() => {
+            document.getElementById('url').style.borderColor = '';
+            document.getElementById('url').style.borderWidth = '';
+        }, 2000);
+    });
+});
+
+// Test mode selector - hide/show model selector based on mode
+document.getElementById('test-mode').addEventListener('change', function() {
+    const modelSelector = document.querySelector('[for="model"]').parentElement.parentElement;
+    if (this.value === 'all') {
+        modelSelector.style.opacity = '0.5';
+        modelSelector.style.pointerEvents = 'none';
+        document.querySelector('[for="model"]').innerHTML = '<i class="fas fa-brain me-2"></i>ML Model (Ignored - Testing All)';
+    } else {
+        modelSelector.style.opacity = '1';
+        modelSelector.style.pointerEvents = 'auto';
+        document.querySelector('[for="model"]').innerHTML = '<i class="fas fa-brain me-2"></i>ML Model (for Single Model mode)';
+    }
+});
+</script>
+{% endblock %}

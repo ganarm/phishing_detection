@@ -1,0 +1,262 @@
+{% extends "base.html" %}
+{% block title %}Model Performance Comparison - Analytics{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary mb-3">
+            <i class="fas fa-chart-bar me-3"></i>Model Performance Comparison
+        </h1>
+        <p class="lead text-secondary">
+            Analyze and compare the performance metrics of different machine learning algorithms
+        </p>
+    </div>
+
+    {% if results %}
+    <!-- Best Model Alert -->
+    <div class="alert alert-success border-success mb-4">
+        <div class="d-flex align-items-center">
+            <i class="fas fa-trophy fa-2x me-3"></i>
+            <div>
+                <h5 class="alert-heading mb-1">Best Performing Model: {{ best_model }}</h5>
+                <p class="mb-0">This model shows the highest accuracy and is recommended for production use.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Overview Cards -->
+    <div class="row mb-5">
+        {% for model in results %}
+        <div class="col-md-6 col-lg-3 mb-4">
+            <div class="card h-100 {% if model.Model == best_model %}border-success shadow-lg{% endif %}">
+                <div class="card-header text-center {% if model.Model == best_model %}bg-success text-white{% else %}bg-light{% endif %}">
+                    <h5 class="card-title mb-0">
+                        {{ model.Model }}
+                        {% if model.Model == best_model %}
+                            <i class="fas fa-star text-warning ms-2"></i>
+                        {% endif %}
+                    </h5>
+                </div>
+                <div class="card-body text-center">
+                    <div class="mb-3">
+                        <div class="progress mb-2" style="height: 20px;">
+                            <div class="progress-bar bg-primary" role="progressbar"
+                                 style="width: {{ "%.0f"|format(model.Accuracy * 100) }}%"
+                                 aria-valuenow="{{ "%.0f"|format(model.Accuracy * 100) }}"
+                                 aria-valuemin="0" aria-valuemax="100">
+                                {{ "%.1f"|format(model.Accuracy * 100) }}%
+                            </div>
+                        </div>
+                        <h6 class="text-primary mb-1">{{ "%.2f"|format(model.Accuracy * 100) }}%</h6>
+                        <small class="text-muted">Accuracy</small>
+                    </div>
+
+                    <div class="row text-center">
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded mb-2">
+                                <small class="d-block text-muted">F1 Score</small>
+                                <strong class="text-info">{{ "%.3f"|format(model['F1 Score']) }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded mb-2">
+                                <small class="d-block text-muted">Training Time</small>
+                                <strong class="text-warning">{{ "%.2f"|format(model['Training Time (s)']) }}s</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <small class="d-block text-muted">Precision</small>
+                                <strong class="text-success">{{ "%.3f"|format(model.Precision) }}</strong>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="p-2 bg-light rounded">
+                                <small class="d-block text-muted">Recall</small>
+                                <strong class="text-danger">{{ "%.3f"|format(model.Recall) }}</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <!-- Detailed Metrics Table -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-table me-2"></i>Detailed Performance Metrics
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-primary">
+                        <tr>
+                            <th><i class="fas fa-brain me-2"></i>Model</th>
+                            <th><i class="fas fa-bullseye me-2"></i>Accuracy</th>
+                            <th><i class="fas fa-crosshairs me-2"></i>Precision</th>
+                            <th><i class="fas fa-search me-2"></i>Recall</th>
+                            <th><i class="fas fa-balance-scale me-2"></i>F1 Score</th>
+                            <th><i class="fas fa-th me-2"></i>Confusion Matrix</th>
+                            <th><i class="fas fa-clock me-2"></i>Training Time</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for model in results %}
+                        <tr class="{% if model.Model == best_model %}table-success{% endif %}">
+                            <td>
+                                <strong>{{ model.Model }}</strong>
+                                {% if model.Model == best_model %}
+                                    <i class="fas fa-star text-warning ms-2" title="Best Model"></i>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <span class="badge bg-primary fs-6">
+                                    {{ "%.2f"|format(model.Accuracy * 100) }}%
+                                </span>
+                            </td>
+                            <td>{{ "%.4f"|format(model.Precision) }}</td>
+                            <td>{{ "%.4f"|format(model.Recall) }}</td>
+                            <td>
+                                <span class="badge bg-info">
+                                    {{ "%.4f"|format(model['F1 Score']) }}
+                                </span>
+                            </td>
+                            <td>
+                                <small class="text-muted">{{ model['Confusion Matrix'] }}</small>
+                            </td>
+                            <td>
+                                <span class="badge bg-secondary">
+                                    {{ "%.2f"|format(model['Training Time (s)']) }}s
+                                </span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Model Explanations -->
+    <div class="card shadow-sm mb-5">
+        <div class="card-header">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-info-circle me-2"></i>Model Explanations
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for model in results %}
+                <div class="col-md-6 mb-4">
+                    <div class="card h-100 {% if model.Model == best_model %}border-success{% endif %}">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">
+                                {{ model.Model }}
+                                {% if model.Model == best_model %}
+                                    <span class="badge bg-success ms-2">Recommended</span>
+                                {% endif %}
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            {% if model.Model == 'RandomForest' %}
+                                <p><strong>Random Forest</strong> is an ensemble learning method that constructs multiple decision trees during training and outputs the class that is the mode of the classes of the individual trees.</p>
+                                <ul class="small">
+                                    <li><strong>Strengths:</strong> High accuracy, handles overfitting well, works with large datasets</li>
+                                    <li><strong>Best for:</strong> General-purpose classification tasks</li>
+                                    <li><strong>Accuracy:</strong> {{ "%.2f"|format(model.Accuracy * 100) }}%</li>
+                                </ul>
+                            {% elif model.Model == 'XGBoost' %}
+                                <p><strong>XGBoost</strong> is an optimized distributed gradient boosting library designed to be highly efficient, flexible and portable.</p>
+                                <ul class="small">
+                                    <li><strong>Strengths:</strong> Excellent performance, handles missing values, parallel processing</li>
+                                    <li><strong>Best for:</strong> High-performance applications requiring speed</li>
+                                    <li><strong>Accuracy:</strong> {{ "%.2f"|format(model.Accuracy * 100) }}%</li>
+                                </ul>
+                            {% elif model.Model == 'DecisionTree' %}
+                                <p><strong>Decision Tree</strong> creates a model that predicts the value of a target variable by learning simple decision rules inferred from the data features.</p>
+                                <ul class="small">
+                                    <li><strong>Strengths:</strong> Easy to interpret, handles both numerical and categorical data</li>
+                                    <li><strong>Best for:</strong> When model interpretability is important</li>
+                                    <li><strong>Accuracy:</strong> {{ "%.2f"|format(model.Accuracy * 100) }}%</li>
+                                </ul>
+                            {% elif model.Model == 'LogisticRegression' %}
+                                <p><strong>Logistic Regression</strong> is a statistical model that uses a logistic function to model a binary dependent variable.</p>
+                                <ul class="small">
+                                    <li><strong>Strengths:</strong> Simple, interpretable, fast training, works well with linear relationships</li>
+                                    <li><strong>Best for:</strong> Baseline models and when interpretability is key</li>
+                                    <li><strong>Accuracy:</strong> {{ "%.2f"|format(model.Accuracy * 100) }}%</li>
+                                </ul>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Dataset Information -->
+    <div class="card shadow-sm">
+        <div class="card-header">
+            <h3 class="card-title mb-0">
+                <i class="fas fa-database me-2"></i>Training Dataset Information
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h5>PhiUSIIL Phishing URL Dataset</h5>
+                    <p class="mb-3">All models were trained on the PhiUSIIL dataset, which contains a balanced collection of legitimate and phishing URLs.</p>
+                    <div class="row">
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h4 class="text-primary mb-1">235,795</h4>
+                                <small class="text-muted">Total URLs</small>
+                            </div>
+                        </div>
+                        <div class="col-6">
+                            <div class="text-center p-3 bg-light rounded">
+                                <h4 class="text-success mb-1">134,850</h4>
+                                <small class="text-muted">Legitimate URLs</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="text-center">
+                        <i class="fas fa-chart-pie fa-4x text-info mb-3"></i>
+                        <p class="small text-muted">Models trained on 50+ extracted features including URL structure, domain analysis, and character patterns.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% else %}
+    <!-- No Results State -->
+    <div class="card shadow-sm">
+        <div class="card-body text-center py-5">
+            <i class="fas fa-exclamation-triangle fa-4x text-warning mb-4"></i>
+            <h3 class="text-muted mb-3">No Trained Models Found</h3>
+            <p class="lead text-secondary mb-4">
+                You need to train machine learning models before comparing their performance.
+                The comparison feature requires trained models with saved metrics.
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('train.train') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-brain me-2"></i>Train Models Now
+                </a>
+                <a href="{{ url_for('main.index') }}" class="btn btn-outline-secondary btn-lg">
+                    <i class="fas fa-home me-2"></i>Back to Home
+                </a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

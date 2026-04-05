@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Train Models</h2>
+<p>Select a model to train or train all models. This may take a few minutes for large datasets.</p>
+<form method="post" id="trainForm">
+    <div class="mb-3">
+        <label for="model_name" class="form-label">Model</label>
+        <select name="model_name" id="model_name" class="form-select">
+            <option value="LogisticRegression">Logistic Regression</option>
+            <option value="DecisionTree">Decision Tree</option>
+            <option value="RandomForest">Random Forest</option>
+            <option value="XGBoost">XGBoost</option>
+            <option value="all">Train All</option>
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary" id="trainBtn">
+        <span id="spinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+        Train
+    </button>
+</form>
+
+<script>
+    document.getElementById('trainForm').addEventListener('submit', function(e) {
+        var btn = document.getElementById('trainBtn');
+        var spinner = document.getElementById('spinner');
+        btn.disabled = true;
+        spinner.classList.remove('d-none');
+        btn.innerHTML = 'Training...';
+    });
+</script>
+{% endblock %}

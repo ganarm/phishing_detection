@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Bulk URL Prediction</h2>
+<p>Upload a CSV file containing a column named "url" with the URLs to predict.</p>
+<form method="post" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="file" class="form-label">CSV File</label>
+        <input type="file" class="form-control" id="file" name="file" accept=".csv" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Upload and Predict</button>
+</form>
+{% endblock %}

@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Training Progress</h2>
+<div class="card">
+    <div class="card-header bg-dark text-success">
+        <span>Console Log</span>
+        <span id="status-indicator" class="badge bg-warning float-end">Running...</span>
+    </div>
+    <div class="card-body p-0">
+        <pre id="log-output" style="background: #000; color: #0f0; height: 500px; overflow-y: scroll; font-family: monospace; padding: 10px; margin: 0;">Loading logs...</pre>
+    </div>
+</div>
+<div class="mt-3">
+    <a href="{{ url_for('compare.compare') }}" class="btn btn-success" id="compareBtn" style="display: none;">Go to Compare Models</a>
+    <a href="{{ url_for('train.train') }}" class="btn btn-secondary">Back to Training</a>
+</div>
+
+<script>
+    let interval;
+    
+    function fetchLog() {
+        fetch('/train/log')
+            .then(response => response.text())
+            .then(data => {
+                const logElement = document.getElementById('log-output');
+                logElement.textContent = data;
+                // Auto-scroll to bottom
+                logElement.scrollTop = logElement.scrollHeight;
+                
+                // Check for completion
+                if (data.includes('### TRAINING COMPLETED ###')) {
+                    document.getElementById('status-indicator').innerHTML = 'Completed';
+                    document.getElementById('status-indicator').className = 'badge bg-success float-end';
+                    document.getElementById('compareBtn').style.display = 'inline-block';
+                    if (interval) clearInterval(interval);
+                }
+            })
+            .catch(err => {
+                console.error('Error fetching log:', err);
+                document.getElementById('log-output').textContent = 'Error loading log. Check server connection.';
+            });
+    }
+    
+    // Fetch every 2 seconds
+    interval = setInterval(fetchLog, 2000);
+    fetchLog(); // initial fetch
+</script>
+{% endblock %}
