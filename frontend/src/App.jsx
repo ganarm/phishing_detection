@@ -214,10 +214,10 @@ function App() {
       />
 
       <main className="main-content">
-        <TopBar theme={theme} setTheme={setTheme} sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} />
+        <TopBar theme={theme} setTheme={setTheme} sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} activeSection={activeSection} />
         {/* <OverviewCard /> */}
 
-        <StatsGrid statCards={statCards} />
+        {activeSection !== 'learn' && <StatsGrid statCards={statCards} />}
 
         {error ? <div className="alert error">{error}</div> : null}
 

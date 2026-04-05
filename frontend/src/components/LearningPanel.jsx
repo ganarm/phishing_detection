@@ -3,13 +3,6 @@ import React from 'react'
 function LearningPanel({ isActive }) {
   return (
     <section className={isActive ? 'workspace-pane active' : 'workspace-pane'}>
-      <div className="section-head">
-        <div>
-          <h3>Learn: Models, SHAP & Phishing Signals</h3>
-          <p className="muted">Detailed guidance about each detection model, explainability (SHAP), and the common phishing parameters we use.</p>
-        </div>
-      </div>
-
       <div className="learn-hero">
         <h2>Understand how threat detection works</h2>
         <p className="muted">This page explains the models powering the scanner, the explanation signals (SHAP), and the key URL/domain features used to detect phishing. Use this to interpret results and improve your threat-hunting workflows.</p>
