@@ -1,4 +1,4 @@
-import { LayoutDashboard, Menu, MoonStar, ShieldCheck, SunMedium, Blocks,History, Layers, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Menu, MoonStar, ShieldCheck, SunMedium, BrainCircuit,Blocks,History, Layers, ChevronLeft, ChevronRight } from 'lucide-react'
 
 function Sidebar({
   apiStatus,
@@ -61,6 +61,7 @@ function Sidebar({
               {idx === 2 && <Menu size={18} />}
               {idx === 3 && <Blocks size={18} />}
               {idx === 4 && <History size={18} />}
+              {idx === 5 && <BrainCircuit size={18} />}
 
             </span>
             {!sidebarCollapsed ? <span className="rail-label">{item.label}</span> : null}

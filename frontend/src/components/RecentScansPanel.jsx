@@ -38,7 +38,7 @@ function RecentScansPanel({ isActive }) {
           <p className="muted">Latest scan history (most recent first).</p>
         </div>
         <div>
-          <Button variant="outlined" size="small" onClick={() => window.location.reload()}>Refresh</Button>
+          <Button variant="outlined" size="small" sx={{color:"white"}} onClick={() => window.location.reload()}>Refresh</Button>
         </div>
       </div>
 
