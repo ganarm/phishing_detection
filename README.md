@@ -1,45 +1,73 @@
-# Phishing URL Detection and ML Model Comparison
+# Phishing URL Detection — Flask API + React Vite UI
 
-This project is a Flask web application that trains and compares multiple machine learning models (Logistic Regression, Decision Tree, Random Forest, XGBoost) on the PhiUSIIL Phishing URL Dataset. It allows users to test individual URLs or upload a CSV file for bulk prediction.
+This project now follows an API-based architecture:
 
-## Features
+- **Backend:** Flask JSON APIs for training, prediction, bulk prediction, and model comparison.
+- **Frontend:** React + Vite app that consumes those APIs.
 
-- Train individual models or all models at once.
-- Compare model performance (accuracy, precision, recall, F1-score, confusion matrix, training time).
-- Test a single URL and get prediction with confidence.
-- Bulk prediction via CSV upload.
+## Architecture
 
-## Requirements
-
-- Python 3.7+
-- Install dependencies: `pip install -r requirements.txt`
-
-## Setup
-
-1. Clone the repository.
-2. Download the PhiUSIIL Phishing URL Dataset from [UCI Machine Learning Repository](https://archive.ics.uci.edu/ml/datasets/PhiUSIIL+Phishing+URL+Dataset) and place the CSV file in the `data/` folder. Ensure the file is named `phiUSIIL_phishing_urls.csv`.
-3. Run the app: `python app.py`
-4. Open http://127.0.0.1:5000 in your browser.
-
-## How It Works
-
-- **Data Loading & Feature Extraction:** The dataset is loaded and 15 features are extracted from each URL (length, number of dots, hyphens, digits, HTTPS usage, etc.).
-- **Model Training:** Each model is trained on 80% of the data and evaluated on the remaining 20%.
-- **Evaluation:** Metrics are stored and displayed on the Compare page.
-- **Prediction:** For a new URL, the same features are extracted, scaled using the saved scaler, and fed into the selected model.
-
-## Project Structure
-
-- `app.py`: Flask application entry point.
-- `routes/`: Flask route blueprints.
-- `services/`: Core logic (data loading, feature extraction, preprocessing, training, evaluation, prediction).
-- `models/`: Saved models, scaler, feature names, and metrics.
-- `templates/`: HTML files.
-- `static/`: CSS styles.
+- `app.py`: Flask app factory, CORS-enabled, registers API blueprint.
+- `routes/api.py`: All HTTP API endpoints under `/api`.
+- `services/`: Model training/prediction/evaluation business logic.
+- `frontend/`: React Vite UI.
+- `models/`: Saved model artifacts and metrics.
 - `data/`: Dataset file.
+
+## API Endpoints
+
+- `GET /api/health`
+- `POST /api/predict`
+	- body: `{ "url": "https://example.com", "model": "RandomForest", "test_mode": "single|all" }`
+- `POST /api/bulk-predict`
+	- body: `{ "urls": ["https://a.com", "https://b.com"], "model": "RandomForest" }`
+- `POST /api/bulk-predict/file`
+	- multipart form-data with `file` (CSV containing `url` column)
+- `GET /api/compare`
+- `POST /api/train`
+	- body: `{ "model_name": "RandomForest|DecisionTree|XGBoost|LogisticRegression|all" }`
+- `GET /api/train/status`
+
+## Prerequisites
+
+- Python 3.12+ (or compatible)
+- Node.js 18+
+
+## Backend Setup (Flask API)
+
+1. Create and activate virtual environment.
+2. Install dependencies from `requirements.txt`.
+3. Run Flask app.
+
+```bash
+cd /media/harish-kushwah/Harish/phishing_detection
+python3 -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
+python app.py
+```
+
+Flask API runs at `http://127.0.0.1:5000`.
+
+## Frontend Setup (React Vite)
+
+From a second terminal:
+
+```bash
+cd /media/harish-kushwah/Harish/phishing_detection/frontend
+npm install
+npm run dev
+```
+
+React app runs at `http://127.0.0.1:5173` and proxies `/api` to Flask.
+
+## Dataset
+
+Place dataset CSV at:
+
+- `data/phiUSIIL_phishing_urls.csv`
 
 ## Notes
 
-- The dataset must contain a column with 'url' in its name and a column with 'label' or 'phishing' (binary values).
-- Training all models may take a few minutes depending on dataset size.
-- The bulk prediction endpoint expects a CSV with a column named `url`.
+- Training can take several minutes depending on dataset size and model choice.
+- Existing `templates/` and `static/` are legacy server-rendered UI assets; the active UI is now under `frontend/`.

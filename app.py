@@ -1,14 +1,12 @@
 from flask import Flask
-from routes import main, train, compare, predict, bulk_predict
+from flask_cors import CORS
+from routes import api
 
 def create_app():
     app = Flask(__name__)
     app.config['SECRET_KEY'] = 'ABC456'  # change for production
-    app.register_blueprint(main.bp)
-    app.register_blueprint(train.bp)
-    app.register_blueprint(compare.bp)
-    app.register_blueprint(predict.bp)
-    app.register_blueprint(bulk_predict.bp)
+    CORS(app)
+    app.register_blueprint(api.bp)
     return app
 
 if __name__ == '__main__':
