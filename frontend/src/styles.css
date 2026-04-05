@@ -432,7 +432,15 @@ body {
     justify-content: space-evenly;
     gap: 10px;
 }
-
+.bulk-panel-form
+{
+  display: flex;
+    align-items: "center";
+    width: 100%;
+    justify-content: space-evenly;
+    gap: 10px;
+    flex-direction: column;
+}
 .toolbar-row {
   display: flex;
   gap: 10px;
@@ -506,10 +514,9 @@ button:disabled {
 .result-grid {
   margin-top: 12px;
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1.6fr 1fr;
   gap: 12px;
 }
-
 .result-card {
   background: var(--card);
   border: 1px solid var(--line);
@@ -521,13 +528,97 @@ button:disabled {
   margin: 4px 0;
   font-size: 1.1rem;
 }
+.result-main {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.result-title {
+  margin: 0;
+}
+
+.prediction-badge {
+  padding: 6px 10px;
+  border-radius: 999px;
+  font-weight: 700;
+  font-size: 0.82rem;
+  display: inline-block;
+}
+
+.prediction-badge.good {
+  color: #065f46;
+  background: #ecfdf5;
+}
+
+.prediction-badge.danger {
+  color: #7f1d1d;
+  background: #fff1f2;
+}
+
+.prediction-badge.neutral {
+  color: var(--muted);
+  background: rgba(148,163,184,0.06);
+}
+
+.result-details {
+  display: grid;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.score-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.score-item {
+  background: rgba(99,102,241,0.04);
+  border: 1px solid rgba(99,102,241,0.06);
+  padding: 6px 8px;
+  border-radius: 6px;
+  font-weight: 700;
+}
+
+.result-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--line);
+  color: var(--text);
+  padding: 6px 10px;
+  border-radius: 6px;
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.btn-secondary:hover {
+  background: rgba(37,99,235,0.06);
+}
 
 .feature-list {
   margin: 8px 0 0;
   padding: 0;
   list-style: none;
-  display: grid;
-  gap: 8px;
+  border: 1px solid #e2e8f0;
+  border-radius: var(--radius-sm);
+  padding: 8px;
+
 }
 
 .feature-list li {
@@ -617,7 +708,7 @@ pre {
   border-radius: var(--radius-md);
   border: 1px solid #1e293b;
   padding: 12px;
-  max-height: 280px;
+  max-height: 480px;
   overflow: auto;
   margin-top: 12px;
 }
@@ -701,6 +792,6 @@ pre {
   }
 }
 
-.MuiOutlinedInput-root{
+/* .MuiOutlinedInput-root{
   max-height: 300px !important;
-}
+} */

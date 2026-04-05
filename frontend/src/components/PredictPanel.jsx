@@ -17,6 +17,25 @@ function PredictPanel({
   predictionResult,
   topFeatures,
 }) {
+  async function handleCopyUrl() {
+    try {
+      await navigator.clipboard.writeText(url || '')
+      // eslint-disable-next-line no-alert
+      alert('URL copied to clipboard')
+    } catch (e) {
+      // eslint-disable-next-line no-console
+      console.error('copy failed', e)
+    }
+  }
+
+  function riskLabel(pred, conf) {
+    if (!pred) return { label: 'Unknown', tone: 'neutral' }
+    const isPhish = String(pred).toLowerCase().includes('phish')
+    if (isPhish) return { label: 'High Risk', tone: 'danger' }
+    // otherwise use confidence threshold
+    if (conf >= 0.8) return { label: 'Likely Safe', tone: 'good' }
+    return { label: 'Low Risk', tone: 'neutral' }
+  }
   return (
     <section className={isActive ? 'workspace-pane active' : 'workspace-pane'}>
       <div className="section-head">
@@ -65,14 +84,40 @@ function PredictPanel({
 
       {predictionResult ? (
         <div className="result-grid">
-          <article className="result-card">
+          <article className="result-card result-main">
             <p className="muted">Prediction</p>
-            <h4>{predictionResult.prediction}</h4>
-            <p className="muted">Model: {predictionResult.model_name}</p>
-            <p className="muted">Confidence: {predictionResult.confidence ?? 'N/A'}</p>
+            <div className="result-header">
+              <h4 className="result-title">{predictionResult.prediction}</h4>
+              <span className={`prediction-badge ${riskLabel(predictionResult.prediction, predictionResult.confidence).tone}`}>
+                {riskLabel(predictionResult.prediction, predictionResult.confidence).label}
+              </span>
+            </div>
+
+            <div className="result-details">
+              <div><strong>Model:</strong> {predictionResult.model_name || 'N/A'}</div>
+              <div><strong>Confidence:</strong> {predictionResult.confidence != null ? Number(predictionResult.confidence).toFixed(2) : 'N/A'}</div>
+              {predictionResult.probabilities ? (
+                <div className="score-row">
+                  {Object.entries(predictionResult.probabilities).map(([k, v]) => (
+                    <div key={k} className="score-item"><strong>{k}</strong>: {Number(v).toFixed(3)}</div>
+                  ))}
+                </div>
+              ) : null}
+
+              <div className="muted" style={{ marginTop: 8 }}>
+                {predictionResult.explanation || 'Model used a set of lexical and structural URL features to determine risk.'}
+              </div>
+
+              <div className="result-actions">
+                <button type="button" className="btn-secondary" onClick={handleCopyUrl}>Copy URL</button>
+                {url ? (
+                  <a className="btn-secondary" href={url} target="_blank" rel="noreferrer">Open URL</a>
+                ) : null}
+              </div>
+            </div>
           </article>
 
-          <article className="result-card">
+          <article className="result-card result-shap">
             <p className="muted">Top SHAP Features</p>
             {topFeatures.length > 0 ? (
               <ul className="feature-list">

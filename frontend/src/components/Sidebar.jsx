@@ -77,7 +77,7 @@ function Sidebar({
           ) : null}
         </div>
 
-        <div className="rail-actions">
+        {/* <div className="rail-actions">
           <button
             className="icon-btn"
             onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
@@ -93,7 +93,7 @@ function Sidebar({
           >
             <Menu size={16} />
           </button>
-        </div>
+        </div> */}
       </div>
     </aside>
   )

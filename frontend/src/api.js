@@ -37,6 +37,23 @@ export function predictBulk(urls, model) {
   })
 }
 
+export async function uploadBulkFile(file, model) {
+  const form = new FormData()
+  form.append('file', file)
+  form.append('model', model)
+
+  const response = await fetch('/api/bulk-predict/file', {
+    method: 'POST',
+    body: form,
+  })
+
+  const contentType = response.headers.get('content-type') || ''
+  const payload = contentType.includes('application/json') ? await response.json() : { error: await response.text() }
+
+  if (!response.ok) throw new Error(payload.error || 'Upload failed')
+  return payload
+}
+
 export function compareModels() {
   return requestJson('/api/compare')
 }

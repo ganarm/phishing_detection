@@ -1,3 +1,8 @@
+import TextField from '@mui/material/TextField'
+import MenuItem from '@mui/material/MenuItem'
+import Button from '@mui/material/Button'
+import Stack from '@mui/material/Stack'
+
 function BulkPanel({
   isActive,
   bulkText,
@@ -18,20 +23,32 @@ function BulkPanel({
         </div>
       </div>
 
-      <form onSubmit={handleBulkPredict} className="panel-form">
-        <textarea
-          rows={7}
+      <form onSubmit={handleBulkPredict} className="panel-form bulk-panel-form">
+        <TextField
+          label="URLs (one per line)"
+          placeholder="https://example.com"
           value={bulkText}
           onChange={(event) => setBulkText(event.target.value)}
-          placeholder="One URL per line"
+          required
+          fullWidth
+          multiline
+          // minRows={6}
+          variant="filled"
+          sx={{overflow:"auto" , margin:"5px"}}
         />
+
         <div className="toolbar-row">
-          <select value={bulkModel} onChange={(event) => setBulkModel(event.target.value)}>
-            {MODELS.map((model) => (
-              <option key={model} value={model}>{model}</option>
-            ))}
-          </select>
-          <button type="submit" disabled={isLoadingBulk}>{isLoadingBulk ? 'Processing...' : 'Run Bulk Scan'}</button>
+          <Stack direction="row" spacing={1} alignItems="center">
+            <TextField select label="Model" value={bulkModel} onChange={(e) => setBulkModel(e.target.value)} size="small">
+              {MODELS.map((model) => (
+                <MenuItem key={model} value={model}>{model}</MenuItem>
+              ))}
+            </TextField>
+
+            <Button type="submit" variant="contained" color="primary" disabled={isLoadingBulk}>
+              {isLoadingBulk ? 'Processing...' : 'Run Bulk Scan'}
+            </Button>
+          </Stack>
         </div>
       </form>
 
