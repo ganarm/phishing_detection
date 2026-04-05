@@ -211,7 +211,7 @@ function App() {
 
       <main className="main-content">
         <TopBar theme={theme} setTheme={setTheme} sidebarCollapsed={sidebarCollapsed} setSidebarCollapsed={setSidebarCollapsed} />
-        <OverviewCard />
+        {/* <OverviewCard /> */}
 
         <StatsGrid statCards={statCards} />
 

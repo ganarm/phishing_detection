@@ -1,4 +1,4 @@
-import { LayoutDashboard, Menu, MoonStar, ShieldCheck, SunMedium, Layers } from 'lucide-react'
+import { LayoutDashboard, Menu, MoonStar, ShieldCheck, SunMedium, Layers, ChevronLeft, ChevronRight } from 'lucide-react'
 
 function Sidebar({
   apiStatus,
@@ -21,10 +21,28 @@ function Sidebar({
           {!sidebarCollapsed ? (
             <div className="brand-info">
               <strong>PhishingShield</strong>
-              <small className="muted">Security Platform</small>
+              {/* <small className="muted sub-info">Security Platform</small> */}
             </div>
           ) : null}
         </button>
+
+        <div className="rail-top-controls">
+          <button
+            className="hide-toggle"
+            onClick={() => setSidebarCollapsed((v) => !v)}
+            aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Hide sidebar'}
+            title={sidebarCollapsed ? 'Expand sidebar' : 'Hide sidebar'}
+          >
+            {!sidebarCollapsed ? (
+              <>
+                <ChevronLeft size={14} />
+                {/* <span>Hide sidebar</span> */}
+              </>
+            ) : (
+              <ChevronRight size={14} />
+            )}
+          </button>
+        </div>
       </div>
 
       <nav className="rail-nav" role="navigation">
