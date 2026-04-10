@@ -110,5 +110,12 @@
     "model": "RandomForest",
     "prediction": "Legitimate",
     "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T18:03:45.159736",
+    "url": "https://episodes.modpro.blog/archives/55278#clickimage",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 1.0
   }
 ]

@@ -8,6 +8,27 @@ function TrainPanel({
   isLoadingTrainAction,
   refreshTrainingStatus,
 }) {
+  function currentStatus() {
+    if (trainState.running) {
+      return {
+        label: `Training in progress${trainState.model_name ? ` for ${trainState.model_name}` : ''}`,
+        tone: 'neutral',
+      }
+    }
+    if (trainState.completed) {
+      return {
+        label: `Training completed${trainState.model_name ? ` for ${trainState.model_name}` : ''}`,
+        tone: 'good',
+      }
+    }
+    return {
+      label: 'Not started yet',
+      tone: 'neutral',
+    }
+  }
+
+  const status = currentStatus()
+
   return (
     <section className={isActive ? 'workspace-pane active' : 'workspace-pane'}>
       <div className="section-head">
@@ -32,16 +53,10 @@ function TrainPanel({
         </div>
       </form>
 
-      <div className="result-grid">
-        <article className="result-card">
-          <p className="muted">Training Running</p>
-          <h4>{String(Boolean(trainState.running))}</h4>
-        </article>
-        <article className="result-card">
-          <p className="muted">Training Completed</p>
-          <h4>{String(Boolean(trainState.completed))}</h4>
-        </article>
-      </div>
+      <article className="result-card">
+        <p className="muted">Current Status</p>
+        <h4 className={`result-title result-title-${status.tone}`}>{status.label}</h4>
+      </article>
 
       <pre>{trainState.log || 'No training logs yet.'}</pre>
     </section>

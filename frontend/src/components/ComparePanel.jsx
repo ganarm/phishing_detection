@@ -24,6 +24,12 @@ function ComparePanel({ isActive, compareResult, isLoadingCompare, handleCompare
     return () => window.removeEventListener('keydown', onKey)
   }, [modalOpen])
 
+  useEffect(() => {
+    if (!isActive) return
+    if ((compareResult.results || []).length > 0) return
+    handleCompare()
+  }, [isActive])
+
   const results = compareResult.results || []
   const best = compareResult.best_model
 
@@ -189,15 +195,10 @@ function ComparePanel({ isActive, compareResult, isLoadingCompare, handleCompare
           </div>
         </>
       ) : (
-        <div className="card shadow-sm">
-          <div className="card-body text-center py-5">
-            <div style={{ fontSize: 42, color: '#f59e0b' }}>⚠️</div>
-            <h3 className="muted mb-3">No Trained Models Found</h3>
-            <p className="lead text-secondary mb-4">You need to train machine learning models before comparing their performance. The comparison feature requires trained models with saved metrics.</p>
-            <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-              <button className="btn" type="button" >Train Models Now</button>
-            </div>
-          </div>
+        <div className="empty-state">
+          {isLoadingCompare
+            ? 'Loading model comparison data...'
+            : 'No model metrics found yet. Go to Training Ops and train a model first, then come back here to compare performance.'}
         </div>
       )}
 
