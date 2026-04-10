@@ -131,5 +131,40 @@
     "model": "RandomForest",
     "prediction": "Phishing",
     "confidence": 0.96
+  },
+  {
+    "ts": "2026-04-10T21:40:53.946844",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T21:41:00.623010",
+    "url": "https://www.google.com",
+    "model": "LogisticRegression",
+    "prediction": "Legitimate",
+    "confidence": 0.9849879313209232
+  },
+  {
+    "ts": "2026-04-10T21:48:47.240330",
+    "url": "https://www.google.com/",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T21:48:47.247667",
+    "url": "modlist.in",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 0.9241666666666666
+  },
+  {
+    "ts": "2026-04-10T21:48:47.248233",
+    "url": "https://net22.cc/home",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 1.0
   }
 ]

@@ -1214,6 +1214,7 @@ pre {
   max-height: 480px;
   overflow: auto;
   margin-top: 12px;
+  max-width: 1524px;
 }
 
 :root[data-theme='dark'] .overview-card,
