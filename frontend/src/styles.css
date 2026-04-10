@@ -916,6 +916,15 @@ button:disabled {
   padding: 10px;
 }
 
+.dataset-sync-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.dataset-sync-stats {
+  margin-top: 12px;
+}
+
 .table-wrap {
   margin-top: 10px;
   overflow: auto;

@@ -73,3 +73,14 @@ export function getScanHistory(limit = 50) {
   const q = new URLSearchParams({ limit: String(limit) })
   return requestJson(`/api/history?${q.toString()}`)
 }
+
+export function getDatasetSyncStatus(limit = 100) {
+  const q = new URLSearchParams({ limit: String(limit) })
+  return requestJson(`/api/dataset-sync?${q.toString()}`)
+}
+
+export function syncUrlhausFeed() {
+  return requestJson('/api/dataset-sync/urlhaus', {
+    method: 'POST',
+  })
+}

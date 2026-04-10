@@ -4,6 +4,7 @@ from .feature_extractor import extract_features
 
 def load_and_preprocess_dataset(log_file):
     data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'phiUSIIL_phishing_urls.csv')
+    supplemental_data_path = os.path.join(os.path.dirname(__file__), '..', 'data', 'urlhaus_recent.csv')
     if not os.path.exists(data_path):
         raise FileNotFoundError(f"Dataset not found at {data_path}. Please download the PhiUSIIL dataset and place it there.")
     
@@ -35,6 +36,18 @@ def load_and_preprocess_dataset(log_file):
     # Convert label to binary (0/1)
     if df['label'].dtype == 'object':
         df['label'] = df['label'].map(lambda x: 1 if str(x).lower() in ['phishing', '1', 'true'] else 0)
+
+    if os.path.exists(supplemental_data_path):
+        supplemental_df = pd.read_csv(supplemental_data_path)
+        if not supplemental_df.empty and {'URL', 'label'}.issubset(supplemental_df.columns):
+            supplemental_df = supplemental_df[['URL', 'label']].copy()
+            df = pd.concat([df[['URL', 'label']], supplemental_df], ignore_index=True)
+            df = df.drop_duplicates(subset=['URL'], keep='last')
+            log_file.write(
+                f"Supplemental URLhaus rows merged: {len(supplemental_df)}. "
+                f"Combined dataset size: {len(df)}\n"
+            )
+            log_file.flush()
     
     # Extract features
     log_file.write("Extracting features from URLs...\n")

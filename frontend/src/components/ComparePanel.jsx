@@ -195,7 +195,7 @@ function ComparePanel({ isActive, compareResult, isLoadingCompare, handleCompare
             <h3 className="muted mb-3">No Trained Models Found</h3>
             <p className="lead text-secondary mb-4">You need to train machine learning models before comparing their performance. The comparison feature requires trained models with saved metrics.</p>
             <div style={{ display: 'flex', gap: 8, justifyContent: 'center' }}>
-              <button className="btn" type="button">Train Models Now</button>
+              <button className="btn" type="button" >Train Models Now</button>
             </div>
           </div>
         </div>

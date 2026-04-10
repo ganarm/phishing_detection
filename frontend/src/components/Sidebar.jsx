@@ -1,4 +1,4 @@
-import { LayoutDashboard, Menu, MoonStar, ShieldCheck, SunMedium, BrainCircuit,Blocks,History, Layers, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Menu, MoonStar, ShieldCheck, SunMedium, BrainCircuit, Blocks, History, Layers, ChevronLeft, ChevronRight, Database } from 'lucide-react'
 
 function Sidebar({
   apiStatus,
@@ -11,6 +11,17 @@ function Sidebar({
   sidebarCollapsed,
   setSidebarCollapsed,
 }) {
+  function iconFor(itemId) {
+    if (itemId === 'predict') return <LayoutDashboard size={18} />
+    if (itemId === 'bulk') return <Layers size={18} />
+    if (itemId === 'compare') return <Menu size={18} />
+    if (itemId === 'train') return <Blocks size={18} />
+    if (itemId === 'dataset') return <Database size={18} />
+    if (itemId === 'history') return <History size={18} />
+    if (itemId === 'learn') return <BrainCircuit size={18} />
+    return <LayoutDashboard size={18} />
+  }
+
   return (
     <aside className={sidebarCollapsed ? 'sidebar collapsed' : 'sidebar'} aria-label="Main navigation">
       <div className="rail-top">
@@ -46,7 +57,7 @@ function Sidebar({
       </div>
 
       <nav className="rail-nav" role="navigation">
-        {navItems.map((item, idx) => (
+        {navItems.map((item) => (
           <button
             type="button"
             key={item.id}
@@ -56,13 +67,7 @@ function Sidebar({
             aria-current={activeSection === item.id ? 'page' : undefined}
           >
             <span className="rail-icon">
-              {idx === 0 && <LayoutDashboard size={18} />}
-              {idx === 1 && <Layers size={18} />}
-              {idx === 2 && <Menu size={18} />}
-              {idx === 3 && <Blocks size={18} />}
-              {idx === 4 && <History size={18} />}
-              {idx === 5 && <BrainCircuit size={18} />}
-
+              {iconFor(item.id)}
             </span>
             {!sidebarCollapsed ? <span className="rail-label">{item.label}</span> : null}
           </button>

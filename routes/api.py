@@ -6,6 +6,7 @@ import numpy as np
 
 from services.predictor import predict_url, bulk_predict
 from services.model_evaluator import compare_models
+from services.urlhaus_sync import get_sync_status, sync_urlhaus_feed
 
 bp = Blueprint('api', __name__, url_prefix='/api')
 
@@ -93,6 +94,25 @@ def history():
 @bp.get('/health')
 def health():
     return jsonify({'status': 'ok'})
+
+
+@bp.get('/dataset-sync')
+def dataset_sync_status():
+    try:
+        limit = int(request.args.get('limit', 100))
+    except Exception:
+        limit = 100
+
+    return jsonify(_to_json_safe(get_sync_status(limit=limit)))
+
+
+@bp.post('/dataset-sync/urlhaus')
+def dataset_sync_urlhaus():
+    try:
+        result = sync_urlhaus_feed()
+        return jsonify(_to_json_safe(result))
+    except Exception as exc:
+        return jsonify({'error': f'Error syncing URLhaus feed: {exc}'}), 500
 
 
 @bp.post('/predict')

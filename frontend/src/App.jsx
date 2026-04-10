@@ -17,9 +17,10 @@ import ComparePanel from './components/ComparePanel'
 import TrainPanel from './components/TrainPanel'
 import RecentScansPanel from './components/RecentScansPanel'
 import LearningPanel from './components/LearningPanel'
+import DatasetSyncPanel from './components/DatasetSyncPanel'
 
 const MODELS = ['RandomForest', 'DecisionTree', 'XGBoost', 'LogisticRegression']
-const SECTIONS = ['predict', 'bulk', 'compare', 'learn', 'train', 'history']
+const SECTIONS = ['predict', 'bulk', 'compare', 'train', 'dataset', 'history', 'learn']
 const THEME_KEY = 'phishshield-theme'
 const SIDEBAR_KEY = 'phishshield-sidebar-collapsed'
 
@@ -195,6 +196,7 @@ function App() {
     { id: 'bulk', label: 'Bulk Analysis', description: 'Batch URL screening' },
     { id: 'compare', label: 'Model Lab', description: 'Metrics and model ranking' },
     { id: 'train', label: 'Training Ops', description: 'Run and monitor retraining' },
+    { id: 'dataset', label: 'Threat Feed', description: 'Sync fresh malicious URLs' },
     { id: 'history', label: 'Recent Scans', description: 'Latest scan history' },
     { id: 'learn', label: 'Learn', description: 'Model & SHAP explanations' },
   ]
@@ -264,6 +266,11 @@ function App() {
           trainState={trainState}
           isLoadingTrainAction={isLoadingTrainAction}
           refreshTrainingStatus={refreshTrainingStatus}
+        />
+
+        <DatasetSyncPanel
+          isActive={activeSection === 'dataset'}
+          setError={setError}
         />
 
         <LearningPanel isActive={activeSection === 'learn'} />
