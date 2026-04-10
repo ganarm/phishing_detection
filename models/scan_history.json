@@ -117,5 +117,19 @@
     "model": "RandomForest",
     "prediction": "Phishing",
     "confidence": 1.0
+  },
+  {
+    "ts": "2026-04-10T18:08:26.202101",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T18:08:50.962714",
+    "url": "https://www.google.com////",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 0.96
   }
 ]

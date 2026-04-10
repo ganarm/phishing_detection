@@ -1,6 +1,12 @@
 :root {
   color-scheme: light;
   font-family: Inter, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  --sidebar-w: 290px;
+  --sidebar-collapsed-w: 88px;
+  /* --sidebar-duration: 300ms; */
+  /* --sidebar-ease: cubic-bezier(.2,.9,.2,1); */
+  /* --label-duration: 300ms; */
+  /* --label-ease: cubic-bezier(.25,.8,.25,1); */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 10px;
@@ -57,12 +63,13 @@ body {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 290px 1fr;
+  grid-template-columns: var(--sidebar-w) 1fr;
   min-height: 100vh;
+  transition: grid-template-columns 220ms cubic-bezier(.2,.9,.2,1);
 }
 
 .app-shell.sidebar-collapsed {
-  grid-template-columns: 88px 1fr;
+  grid-template-columns: var(--sidebar-collapsed-w) 1fr;
 }
 
 .sidebar {
@@ -75,18 +82,59 @@ body {
   gap: 12px;
   min-height: 100vh;
   box-shadow: 0 2px 8px rgba(16,24,40,0.04);
+  width: var(--sidebar-w);
+  overflow: hidden;
+  transition: width 220ms cubic-bezier(.2,.9,.2,1), padding 180ms ease;
 }
 
 .sidebar.collapsed {
   padding: 12px 8px;
+  width: var(--sidebar-collapsed-w);
+}
+
+.sidebar.collapsed .brand-logo {
+  width: 36px;
+  height: 36px;
+  font-size: 0.78rem;
+  transform: translateY(-1px);
+}
+
+.sidebar.collapsed .rail-icon {
+  transform: scale(0.94);
+}
+
+.sidebar.collapsed .rail-label {
+  opacity: 0;
+  transform: translateX(-6px);
+  max-width: 0;
+  pointer-events: none;
+}
+
+.sidebar .rail-item:hover .rail-icon {
+  transform: scale(1.05);
+}
+
+.rail-item:active {
+  transform: translateY(1px);
 }
 
 /* collapsed helpers */
+.brand-info,
+.rail-label,
+.status-small,
+.muted {
+  transition: opacity 160ms ease, max-width 200ms ease, height 200ms ease;
+}
+
 .sidebar.collapsed .brand-info,
 .sidebar.collapsed .rail-label,
 .sidebar.collapsed .status-small,
 .sidebar.collapsed .muted {
-  display: none;
+  opacity: 0;
+  max-width: 0;
+  height: 0;
+  overflow: hidden;
+  pointer-events: none;
 }
 
 .rail-top {
@@ -120,7 +168,17 @@ body {
 }
 
 .sidebar.collapsed .hide-toggle span {
-  display: none;
+  opacity: 0;
+  max-width: 0;
+  display: inline-block;
+  transition: opacity 160ms ease, max-width 180ms ease;
+}
+
+/* When expanded ensure full visibility */
+.hide-toggle span {
+  opacity: 1;
+  max-width: 1000px;
+  transition: opacity 160ms ease, max-width 180ms ease;
 }
 
 .brand-button {
@@ -169,6 +227,7 @@ body {
   font-size: 0.88rem;
   color: #1d4ed8;
   border: 1px solid rgba(191, 219, 254, 0.4);
+  /* transition: width var(--sidebar-duration) var(--sidebar-ease), height var(--sidebar-duration) var(--sidebar-ease), font-size var(--label-duration) var(--label-ease), transform var(--label-duration) var(--label-ease); */
 }
 
 .brand-kicker {
@@ -205,6 +264,18 @@ body {
   color: var(--text);
   cursor: pointer;
   transition: background 0.15s ease, transform 0.12s ease;
+}
+
+.rail-item .rail-icon {
+  transition: transform var(--label-duration) var(--label-ease), opacity var(--label-duration) var(--label-ease);
+}
+
+.rail-item .rail-label {
+  display: inline-block;
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity var(--label-duration) var(--label-ease), transform var(--label-duration) var(--label-ease), max-width var(--label-duration) var(--label-ease);
+  white-space: nowrap;
 }
 
 .rail-item:hover {
@@ -655,8 +726,8 @@ button {
 }
 
 button:hover {
-  /* transform: translateY(-1px); */
-  /* box-shadow: 0 10px 16px rgba(37, 99, 235, 0.25); */
+  transform: translateY(0);
+  box-shadow: none;
 }
 
 button.secondary {
