@@ -7,17 +7,34 @@ function RecentScansPanel({ isActive }) {
   const [items, setItems] = useState([])
   const [error, setError] = useState('')
 
-  useEffect(() => {
-    if (!isActive) return
+  function loadHistory() {
     setLoading(true)
     setError('')
-    getScanHistory(50)
+    return getScanHistory(50)
       .then((res) => {
         setItems(res.results || [])
       })
       .catch((err) => setError(err.message))
       .finally(() => setLoading(false))
+  }
+
+  useEffect(() => {
+    if (!isActive) return
+    loadHistory()
   }, [isActive])
+
+  function predictionTone(prediction) {
+    if (String(prediction || '').toLowerCase().includes('phish')) return 'danger'
+    if (String(prediction || '').toLowerCase().includes('legit')) return 'good'
+    return 'neutral'
+  }
+
+  function formatTimestamp(ts) {
+    if (!ts) return 'N/A'
+    const d = new Date(ts)
+    if (Number.isNaN(d.getTime())) return ts
+    return d.toLocaleString()
+  }
 
   function handleCopy(url) {
     try {
@@ -38,7 +55,7 @@ function RecentScansPanel({ isActive }) {
           <p className="muted">Latest scan history (most recent first).</p>
         </div>
         <div>
-          <Button variant="outlined" size="small" sx={{color:"white"}} onClick={() => window.location.reload()}>Refresh</Button>
+          <Button variant="outlined" size="small" sx={{"color":"white"}}onClick={loadHistory}>Refresh</Button>
         </div>
       </div>
 
@@ -63,16 +80,24 @@ function RecentScansPanel({ isActive }) {
             </thead>
             <tbody>
               {items.map((it, idx) => (
-                <tr key={`${it.ts}-${idx}`}>
-                  <td style={{ whiteSpace: 'nowrap' }}>{it.ts}</td>
-                  <td style={{ maxWidth: 520, overflow: 'hidden', textOverflow: 'ellipsis' }} title={it.url}>{it.url}</td>
+                <tr key={`${it.ts}-${idx}`} className={`scan-row scan-row-${predictionTone(it.prediction)}`}>
+                  <td className="scan-time-cell">{formatTimestamp(it.ts)}</td>
+                  <td className="scan-url-cell" title={it.url}>{it.url}</td>
                   <td>{it.model}</td>
-                  <td>{it.prediction}</td>
-                  <td>{it.confidence != null ? Number(it.confidence).toFixed(3) : 'N/A'}</td>
                   <td>
-                    <div style={{ display: 'flex', gap: 8 }}>
-                      <button type="button" className="btn-secondary" onClick={() => handleCopy(it.url)}>Copy</button>
-                      {it.url ? (
+                    <span className={`badge ${predictionTone(it.prediction)}`}>
+                      {it.prediction || 'Unknown'}
+                    </span>
+                  </td>
+                  <td className="scan-confidence-cell">
+                    {it.confidence != null ? Number(it.confidence).toFixed(3) : 'N/A'}
+                  </td>
+                  <td>
+                    <div className="scan-actions">
+                      {!String(it.prediction || '').toLowerCase().includes('phish') ? (
+                        <button type="button" className="btn-secondary" onClick={() => handleCopy(it.url)}>Copy</button>
+                      ) : null}
+                      {it.url && !String(it.prediction || '').toLowerCase().includes('phish') ? (
                         <a className="btn-secondary" href={it.url} target="_blank" rel="noreferrer">Open</a>
                       ) : null}
                     </div>

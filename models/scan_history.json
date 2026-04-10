@@ -19,5 +19,89 @@
     "model": "DecisionTree",
     "prediction": "Phishing",
     "confidence": 1.0
+  },
+  {
+    "ts": "2026-04-10T15:59:45.902731",
+    "url": "https://www.google.com",
+    "model": "DecisionTree",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T15:59:52.049249",
+    "url": "https://www.google.com",
+    "model": "XGBoost",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T15:59:56.963533",
+    "url": "https://www.google.com",
+    "model": "LogisticRegression",
+    "prediction": "Legitimate",
+    "confidence": 0.9849879313209232
+  },
+  {
+    "ts": "2026-04-10T16:05:41.899433",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T16:06:14.503018",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T16:07:56.984563",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T16:09:53.280191",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T16:32:04.314515",
+    "url": "https://mui.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T16:36:57.229526",
+    "url": "https://mui.com///",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 1.0
+  },
+  {
+    "ts": "2026-04-10T16:43:04.442412",
+    "url": "http://localhost:1455/success",
+    "model": "RandomForest",
+    "prediction": "Phishing",
+    "confidence": 1.0
+  },
+  {
+    "ts": "2026-04-10T16:43:04.447587",
+    "url": "https://www.google.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T16:43:04.448264",
+    "url": "https://www.outlook.com",
+    "model": "RandomForest",
+    "prediction": "Legitimate",
+    "confidence": 0.51
   }
 ]

@@ -1,0 +1,55 @@
+# OS / editor
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+.coverage.*
+htmlcov/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Logs / runtime files
+*.log
+models/training.log
+models/scan_history.json
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+frontend/.cache/
+
+# Environment / local config
+.env
+.env.*
+*.local
+
+# Generated / temporary files
+.codex
+*.tmp
+*.temp
+*.bak
+*.orig
+*.rej
+.~lock.*
+
+# Notebook / misc artifacts
+.ipynb_checkpoints/
