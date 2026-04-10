@@ -3,9 +3,79 @@ import joblib
 import pandas as pd
 import numpy as np
 import shap
+from urllib.parse import urlparse
 from .feature_extractor import extract_features
 
 MODELS_DIR = os.path.join(os.path.dirname(__file__), '..', 'models')
+
+
+def _model_outputs(url, model_name='RandomForest'):
+    model, scaler, feature_names = load_model_and_scaler(model_name)
+    features = extract_features(url)
+    feature_df = pd.DataFrame([features])
+    feature_df = feature_df[feature_names]
+    scaled_features = scaler.transform(feature_df)
+    pred = model.predict(scaled_features)[0]
+    proba = model.predict_proba(scaled_features)[0] if hasattr(model, 'predict_proba') else None
+    return model, feature_names, scaled_features, pred, proba
+
+
+def _label_from_pred(pred):
+    # Dataset uses 0=phishing, 1=legitimate.
+    return "Phishing" if int(pred) == 0 else "Legitimate"
+
+
+def _build_probabilities(proba):
+    if proba is None or len(proba) < 2:
+        return None
+    return {
+        'phishing': float(proba[0]),
+        'legitimate': float(proba[1]),
+    }
+
+
+def _is_obviously_legitimate_homepage(url):
+    parsed = urlparse(str(url))
+    hostname = (parsed.hostname or '').lower()
+    if not hostname:
+        return False
+
+    path = parsed.path or ''
+    if path not in ('', '/'):
+        return False
+
+    if parsed.query or parsed.fragment:
+        return False
+
+    if parsed.scheme != 'https':
+        return False
+
+    if hostname.startswith('www.'):
+        hostname = hostname[4:]
+
+    parts = [part for part in hostname.split('.') if part]
+    if len(parts) != 2:
+        return False
+
+    root, tld = parts
+    allowed_tlds = {'com', 'org', 'net', 'edu', 'gov', 'io', 'co'}
+    if tld not in allowed_tlds:
+        return False
+
+    if any(ch.isdigit() for ch in root):
+        return False
+
+    if '-' in root or '_' in root:
+        return False
+
+    suspicious_tokens = {
+        'login', 'signin', 'secure', 'verify', 'update', 'account',
+        'bank', 'payment', 'confirm', 'support', 'service', 'wallet',
+    }
+    if any(token in root for token in suspicious_tokens):
+        return False
+
+    return True
 
 def load_model_and_scaler(model_name='RandomForest'):
     model_path = os.path.join(MODELS_DIR, f'{model_name}.pkl')
@@ -19,31 +89,29 @@ def load_model_and_scaler(model_name='RandomForest'):
     return model, scaler, feature_names
 
 def predict_url(url, model_name='RandomForest'):
-    model, scaler, feature_names = load_model_and_scaler(model_name)
-    features = extract_features(url)
-    feature_df = pd.DataFrame([features])
-    # Reorder columns to match training order
-    feature_df = feature_df[feature_names]
-    scaled_features = scaler.transform(feature_df)
-    pred = model.predict(scaled_features)[0]
-    proba = model.predict_proba(scaled_features)[0] if hasattr(model, 'predict_proba') else None
+    model, feature_names, scaled_features, pred, proba = _model_outputs(url, model_name)
     confidence = max(proba) if proba is not None else None
-    
-    # IMPORTANT: Dataset labels are reversed
-    # label=0 in dataset = PHISHING
-    # label=1 in dataset = LEGITIMATE
-    # So we need to flip the prediction
-    if pred == 0:
-        prediction = "Phishing"  # model predicted 0 = phishing
-    else:
-        prediction = "Legitimate"  # model predicted 1 = legitimate
+    prediction = _label_from_pred(pred)
+    probabilities = _build_probabilities(proba)
 
     # Generate SHAP explanations
     shap_explanations = generate_shap_explanation(model, scaled_features, feature_names, model_name)
+    explanation = 'Model used lexical URL features to estimate phishing risk.'
+
+    if prediction == "Phishing" and _is_obviously_legitimate_homepage(url):
+        prediction = "Legitimate"
+        legitimate_confidence = probabilities['legitimate'] if probabilities else 0.51
+        confidence = max(legitimate_confidence, 0.51)
+        explanation = (
+            'Heuristic override applied: simple HTTPS root-domain homepage with no '
+            'suspicious path, query, IP, digits, or phishing keywords.'
+        )
 
     return {
         'prediction': prediction,
         'confidence': confidence,
+        'probabilities': probabilities,
+        'explanation': explanation,
         'shap_explanations': shap_explanations
     }
 
@@ -154,14 +222,12 @@ def generate_shap_explanation(model, scaled_features, feature_names, model_name)
         }
 
 def bulk_predict(urls, model_name='RandomForest'):
-    model, scaler, feature_names = load_model_and_scaler(model_name)
     results = []
     for url in urls:
-        features = extract_features(url)
-        feature_df = pd.DataFrame([features])
-        feature_df = feature_df[feature_names]
-        scaled = scaler.transform(feature_df)
-        pred = model.predict(scaled)[0]
-        prediction = "Phishing" if pred == 1 else "Legitimate"
-        results.append({'url': url, 'prediction': prediction})
+        result = predict_url(url, model_name)
+        results.append({
+            'url': url,
+            'prediction': result['prediction'],
+            'confidence': result.get('confidence'),
+        })
     return pd.DataFrame(results)

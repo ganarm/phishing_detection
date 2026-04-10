@@ -154,7 +154,7 @@ function App() {
   useEffect(() => {
     const intervalId = setInterval(() => {
       refreshTrainingStatus()
-    }, 300000) //TODO : make to 3 seconds
+    }, 30000) //TODO : make to 3 seconds
 
     return () => clearInterval(intervalId)
   }, [])

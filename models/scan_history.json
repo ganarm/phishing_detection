@@ -1,65 +1,23 @@
 [
   {
-    "ts": "2026-04-05T22:24:50.414871",
-    "url": "https://www.google.com",
-    "model": "RandomForest",
-    "prediction": "Phishing",
-    "confidence": 0.5585000000000001
+    "ts": "2026-04-10T15:44:27.316399",
+    "url": "https://www.google.com/",
+    "model": "XGBoost",
+    "prediction": "Legitimate",
+    "confidence": 0.51
   },
   {
-    "ts": "2026-04-05T22:25:11.080096",
-    "url": "https://www.google.com",
+    "ts": "2026-04-10T15:45:30.080444",
+    "url": "https://www.google.com/",
+    "model": "XGBoost",
+    "prediction": "Legitimate",
+    "confidence": 0.51
+  },
+  {
+    "ts": "2026-04-10T15:48:46.004714",
+    "url": "https://chatgpt.com/c/69bee3e2-7a38-8323-8503-600e1c686b22",
     "model": "DecisionTree",
     "prediction": "Phishing",
     "confidence": 1.0
-  },
-  {
-    "ts": "2026-04-05T22:25:25.888844",
-    "url": "API: /api",
-    "model": "RandomForest",
-    "prediction": "Legitimate",
-    "confidence": null
-  },
-  {
-    "ts": "2026-04-05T22:25:51.812791",
-    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
-    "model": "RandomForest",
-    "prediction": "Legitimate",
-    "confidence": null
-  },
-  {
-    "ts": "2026-04-05T22:25:51.813292",
-    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
-    "model": "RandomForest",
-    "prediction": "Legitimate",
-    "confidence": null
-  },
-  {
-    "ts": "2026-04-05T22:25:51.813850",
-    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
-    "model": "RandomForest",
-    "prediction": "Legitimate",
-    "confidence": null
-  },
-  {
-    "ts": "2026-04-05T22:25:51.814559",
-    "url": "https://mui.com/store/items/mantis-react-admin-dashboard-template/",
-    "model": "RandomForest",
-    "prediction": "Legitimate",
-    "confidence": null
-  },
-  {
-    "ts": "2026-04-05T22:32:43.216195",
-    "url": "s",
-    "model": "RandomForest",
-    "prediction": "Phishing",
-    "confidence": 0.9241666666666666
-  },
-  {
-    "ts": "2026-04-05T23:00:27.793244",
-    "url": "margin: 25px 0px;",
-    "model": "RandomForest",
-    "prediction": "Phishing",
-    "confidence": 0.9341666666666666
   }
 ]

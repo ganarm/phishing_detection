@@ -17,6 +17,13 @@ function PredictPanel({
   predictionResult,
   topFeatures,
 }) {
+  const hasAllModels = Boolean(
+    predictionResult?.test_mode === 'all' &&
+    predictionResult?.all_models_results &&
+    Object.keys(predictionResult.all_models_results).length,
+  )
+  const modelEntries = hasAllModels ? Object.entries(predictionResult.all_models_results) : []
+
   async function handleCopyUrl() {
     try {
       await navigator.clipboard.writeText(url || '')
@@ -36,6 +43,36 @@ function PredictPanel({
     if (conf >= 0.8) return { label: 'Likely Safe', tone: 'good' }
     return { label: 'Low Risk', tone: 'neutral' }
   }
+
+  function formatConfidence(conf) {
+    return conf != null ? Number(conf).toFixed(2) : 'N/A'
+  }
+
+  function renderProbabilities(probabilities) {
+    if (!probabilities) return null
+    return (
+      <div className="score-row">
+        {Object.entries(probabilities).map(([k, v]) => (
+          <div key={k} className="score-item"><strong>{k}</strong>: {Number(v).toFixed(3)}</div>
+        ))}
+      </div>
+    )
+  }
+
+  function renderFeatures(features, emptyLabel = 'No SHAP explanation available.') {
+    if (!features?.length) return <p className="muted">{emptyLabel}</p>
+    return (
+      <ul className="feature-list">
+        {features.map((feature) => (
+          <li key={feature.feature}>
+            <span>{feature.feature}</span>
+            <span>{Number(feature.importance).toFixed(4)}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
+
   return (
     <section className={isActive ? 'workspace-pane active' : 'workspace-pane'}>
       <div className="section-head">
@@ -85,7 +122,7 @@ function PredictPanel({
       {predictionResult ? (
         <div className="result-grid">
           <article className="result-card result-main">
-            <p className="muted">Prediction</p>
+            <p className="muted">{hasAllModels ? 'Prediction Summary' : 'Prediction'}</p>
             <div className="result-header">
               <h4 className="result-title">{predictionResult.prediction}</h4>
               <span className={`prediction-badge ${riskLabel(predictionResult.prediction, predictionResult.confidence).tone}`}>
@@ -94,15 +131,10 @@ function PredictPanel({
             </div>
 
             <div className="result-details">
-              <div><strong>Model:</strong> {predictionResult.model_name || 'N/A'}</div>
-              <div><strong>Confidence:</strong> {predictionResult.confidence != null ? Number(predictionResult.confidence).toFixed(2) : 'N/A'}</div>
-              {predictionResult.probabilities ? (
-                <div className="score-row">
-                  {Object.entries(predictionResult.probabilities).map(([k, v]) => (
-                    <div key={k} className="score-item"><strong>{k}</strong>: {Number(v).toFixed(3)}</div>
-                  ))}
-                </div>
-              ) : null}
+              <div><strong>Mode:</strong> {hasAllModels ? 'All models' : 'Single model'}</div>
+              <div><strong>Model:</strong> {hasAllModels ? 'Consensus summary' : (predictionResult.model_name || 'N/A')}</div>
+              <div><strong>Confidence:</strong> {formatConfidence(predictionResult.confidence)}</div>
+              {renderProbabilities(predictionResult.probabilities)}
 
               <div className="muted" style={{ marginTop: 8 }}>
                 {predictionResult.explanation || 'Model used a set of lexical and structural URL features to determine risk.'}
@@ -118,18 +150,44 @@ function PredictPanel({
           </article>
 
           <article className="result-card result-shap">
-            <p className="muted">Top SHAP Features</p>
-            {topFeatures.length > 0 ? (
-              <ul className="feature-list">
-                {topFeatures.map((feature) => (
-                  <li key={feature.feature}>
-                    <span>{feature.feature}</span>
-                    <span>{feature.importance.toFixed(4)}</span>
-                  </li>
-                ))}
-              </ul>
+            <p className="muted">{hasAllModels ? 'Model Breakdown' : 'Top SHAP Features'}</p>
+            {hasAllModels ? (
+              <div className="result-details">
+                {modelEntries.map(([modelName, result]) => {
+                  const modelTopFeatures = result?.shap_explanations?.top_features?.slice(0, 5) || []
+                  return (
+                    <article key={modelName} className="result-card">
+                      <div className="result-header">
+                        <h4 className="result-title">{modelName}</h4>
+                        <span className={`prediction-badge ${riskLabel(result?.prediction, result?.confidence).tone}`}>
+                          {riskLabel(result?.prediction, result?.confidence).label}
+                        </span>
+                      </div>
+
+                      <div className="result-details">
+                        {'error' in (result || {}) ? (
+                          <p className="muted">{result.error}</p>
+                        ) : (
+                          <>
+                            <div><strong>Prediction:</strong> {result?.prediction || 'N/A'}</div>
+                            <div><strong>Confidence:</strong> {formatConfidence(result?.confidence)}</div>
+                            {renderProbabilities(result?.probabilities)}
+                            <div className="muted">
+                              {result?.explanation || 'Model used a set of lexical and structural URL features to determine risk.'}
+                            </div>
+                            <div>
+                              <strong>Top SHAP Features</strong>
+                            </div>
+                            {renderFeatures(modelTopFeatures)}
+                          </>
+                        )}
+                      </div>
+                    </article>
+                  )
+                })}
+              </div>
             ) : (
-              <p className="muted">No SHAP explanation available.</p>
+              renderFeatures(topFeatures)
             )}
           </article>
         </div>

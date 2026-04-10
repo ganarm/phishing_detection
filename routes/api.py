@@ -2,6 +2,7 @@ from flask import Blueprint, jsonify, request
 import os
 import threading
 import pandas as pd
+import numpy as np
 
 from services.predictor import predict_url, bulk_predict
 from services.model_evaluator import compare_models
@@ -15,6 +16,20 @@ TRAINING_STATE = {
     'running': False,
     'model_name': None,
 }
+
+
+def _to_json_safe(value):
+    if isinstance(value, dict):
+        return {str(k): _to_json_safe(v) for k, v in value.items()}
+    if isinstance(value, list):
+        return [_to_json_safe(v) for v in value]
+    if isinstance(value, tuple):
+        return [_to_json_safe(v) for v in value]
+    if isinstance(value, np.generic):
+        return value.item()
+    if isinstance(value, pd.Timestamp):
+        return value.isoformat()
+    return value
 
 
 def _run_training(model_name, log_path):
@@ -113,15 +128,17 @@ def predict():
                     'all_models_results': all_models_results,
                 }), 500
 
-            return jsonify({
+            return jsonify(_to_json_safe({
                 'url': url,
                 'test_mode': test_mode,
                 'prediction': primary_result['prediction'],
                 'confidence': primary_result.get('confidence'),
+                'probabilities': primary_result.get('probabilities'),
+                'explanation': primary_result.get('explanation'),
                 'shap_explanations': primary_result.get('shap_explanations'),
-                'model_name': primary_result['model'],
+                'model_name': 'All models',
                 'all_models_results': all_models_results,
-            })
+            }))
 
         result = predict_url(url, model_name)
         resp = {
@@ -129,6 +146,8 @@ def predict():
             'test_mode': test_mode,
             'prediction': result['prediction'],
             'confidence': result.get('confidence'),
+            'probabilities': result.get('probabilities'),
+            'explanation': result.get('explanation'),
             'shap_explanations': result.get('shap_explanations'),
             'model_name': model_name,
             'all_models_results': None,
@@ -145,7 +164,7 @@ def predict():
         except Exception:
             pass
 
-        return jsonify(resp)
+        return jsonify(_to_json_safe(resp))
     except Exception as exc:
         return jsonify({'error': f'Error making prediction: {exc}'}), 500
 
@@ -178,10 +197,10 @@ def bulk():
         except Exception:
             pass
 
-        return jsonify({
+        return jsonify(_to_json_safe({
             'count': len(results_df),
             'results': results_df.to_dict(orient='records'),
-        })
+        }))
     except Exception as exc:
         return jsonify({'error': f'Error processing urls: {exc}'}), 500
 
@@ -212,10 +231,10 @@ def bulk_from_file():
         except Exception:
             pass
 
-        return jsonify({
+        return jsonify(_to_json_safe({
             'count': len(results_df),
             'results': results_df.to_dict(orient='records'),
-        })
+        }))
     except Exception as exc:
         return jsonify({'error': f'Error processing file: {exc}'}), 500
 
@@ -230,10 +249,10 @@ def compare():
     if not results.empty:
         best_model = results.loc[results['Accuracy'].idxmax(), 'Model']
 
-    return jsonify({
+    return jsonify(_to_json_safe({
         'results': results.to_dict(orient='records'),
         'best_model': best_model,
-    })
+    }))
 
 
 @bp.post('/train')
